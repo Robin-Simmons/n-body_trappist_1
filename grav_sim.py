@@ -8,6 +8,14 @@ from scipy.optimize import curve_fit
 class grav_obj:
 
     def __init__(self, mass, pos, vel, name):
+        """ grav object storing variables for velocity verlet integration
+
+        Args:
+            mass (float): mass [kg]
+            pos ((3,1) array): initial position from origin [km]
+            vel ((3,1) array): initial velocity [km/s]
+            name (string): object name
+        """
         self.mass = mass
         self.pos = pos
         self.vel = vel
@@ -16,7 +24,7 @@ class grav_obj:
         self.accel_accumulator = np.zeros(3)
         self.pos_history = np.empty((N,3))
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"{self.name} grav object"
 
     def draw_obj(self, ax):
@@ -40,7 +48,12 @@ def compute_pairs(objects):
 
 
 def vel_verlet(objects, pairs):
-    
+    """ Iterate one timestep with velocity verlet 
+
+    Args:
+        objects (list[grav_obj]): list of all grav_objs in system
+        pairs (list[int]): precomputed combinatorial list
+    """
     for pair in pairs:
         
         obj1 = objects[pair[0]]
@@ -71,10 +84,27 @@ def vel_verlet(objects, pairs):
         obj.accel_accumulator = np.zeros(3)
 
 def orb_vel(a, T):
+    """ Returns orbital velocity from period and semi-major axis
+
+    Args:
+        a (float): semi-major axis [km]
+        T (float): period [s]
+
+    Returns:
+        v (float): velocity [km/s]
+    """
     T = T*60**2*24
     return 2*np.pi*a/T
 
 def CoM(objects):
+    """ Get centre of mass of objects
+
+    Args:
+        objects (list[grav_obj])
+
+    Returns:
+        CoM ((3,1) array): Centre of mass
+    """
     centre = np.zeros(3)
     M_total = 0
     for object in objects:
